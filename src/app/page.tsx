@@ -145,12 +145,24 @@ export default function Home() {
   const shippingCost = getShippingCost()
   const finalTotal = subtotalCartPrice + (cart.length > 0 ? shippingCost : 0)
 
+// Estado para alertas de error en el formulario de despacho
+  const [formError, setFormError] = useState('')
+
   const checkoutWhatsApp = () => {
     if (cart.length === 0) return
+
+    // Validar que los campos obligatorios no estén vacíos
+    if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
+      setFormError('⚠️ Por favor, rellena todos los campos de entrega (Nombre, Teléfono y Dirección) antes de enviar el pedido.')
+      return
+    }
+
+    setFormError('') // Limpiar error si todo está OK
+
     let message = `NUEVO PEDIDO / COTIZACION - PacificoClean\n\n`
-    message += `Cliente: ${clientName || 'No especificado'}\n`
-    message += `Telefono: ${clientPhone || 'No especificado'}\n`
-    message += `Direccion: ${clientAddress || 'No especificada'}\n`
+    message += `Cliente: ${clientName}\n`
+    message += `Telefono: ${clientPhone}\n`
+    message += `Direccion: ${clientAddress}\n`
     message += `Ciudad / Comuna: ${clientCity} (Despacho: ${shippingCost === 0 ? 'GRATIS' : '$' + shippingCost.toLocaleString('es-CL')})\n\n`
     message += `Detalle de Productos:\n`
     cart.forEach(item => {
@@ -161,7 +173,10 @@ export default function Home() {
     message += `\nTOTAL FINAL: $${finalTotal.toLocaleString('es-CL')}\n\nHay stock disponible para coordinar la entrega?`
     
     const encoded = encodeURIComponent(message)
-    window.open(`https://wa.me/56934341783?text=${encoded}`, '_blank')
+    const url = `https://wa.me/56934341783?text=${encoded}`
+    
+    // Apertura limpia optimizada para móviles
+    window.location.href = url
   }
 
   // Lista completa de productos con correcciones aplicadas
@@ -627,6 +642,13 @@ export default function Home() {
                     <h4 className="font-bold text-xs text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                       <User className="w-3.5 h-3.5 text-[#0A4D94]" /> Datos para tu Entrega / Despacho
                     </h4>
+
+                    {/* AVISO DE ERROR SI FALTAN CAMPOS */}
+                    {formError && (
+                      <div className="bg-red-50 border border-red-200 text-red-600 text-xs font-bold p-3 rounded-xl animate-pulse">
+                        {formError}
+                      </div>
+                    )}
                     
                     <div>
                       <label className="block text-[11px] font-bold text-slate-600 mb-1">Tu Nombre</label>
