@@ -1,7 +1,38 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { Product } from '@/types'
 import { WhatsAppButton } from '@/components/whatsapp-button'
+
+// Definimos los tipos aquí mismo de forma local y autónoma
+export interface Category {
+  id: string
+  name: string
+  slug: string
+  image_url?: string | null
+  created_at: string
+}
+
+export interface ProductImage {
+  id: string
+  product_id: string
+  image_url: string
+  position: number
+}
+
+export interface Product {
+  id: string
+  name: string
+  slug: string
+  description?: string | null
+  price: number
+  stock: number
+  category_id?: string | null
+  is_active: boolean
+  is_featured: boolean
+  is_offer: boolean
+  created_at: string
+  categories?: Category
+  product_images?: ProductImage[]
+}
 
 export function ProductCard({ product }: { product: Product }) {
   const mainImage = product.product_images?.[0]?.image_url || 'https://images.unsplash.com/photo-1585421514284-efb74c2b69ba?auto=format&fit=crop&q=80&w=600'
