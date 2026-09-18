@@ -6,7 +6,7 @@ interface WhatsAppButtonProps {
 }
 
 export function WhatsAppButton({ productName, price }: WhatsAppButtonProps) {
-  const phoneNumber = '56934341783'
+  const phoneNumber = '56959406597'
   const message = `Hola, me interesa comprar ${productName} ($${price.toLocaleString('es-CL')}) que vi en su página web.`
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
 
