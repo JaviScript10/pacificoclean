@@ -173,7 +173,7 @@ const checkoutWhatsApp = () => {
     message += `\nTOTAL FINAL: $${finalTotal.toLocaleString('es-CL')}\n\nHay stock disponible para coordinar la entrega?`
     
     const encoded = encodeURIComponent(message)
-    const url = `https://wa.me/56934341783?text=${encoded}`
+    const url = `https://wa.me/56959406597?text=${encoded}`
     
     // Detección automática: Si es dispositivo móvil abre directo, si es PC abre pestaña nueva
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
@@ -830,7 +830,7 @@ const checkoutWhatsApp = () => {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-2">
-            <a href="tel:+56934341783" className="bg-slate-800 hover:bg-slate-700 p-5 rounded-2xl border border-slate-700 transition-all flex flex-col items-center gap-2">
+            <a href="tel:+56959406597" className="bg-slate-800 hover:bg-slate-700 p-5 rounded-2xl border border-slate-700 transition-all flex flex-col items-center gap-2">
               <Phone className="w-6 h-6 text-emerald-400" />
               <span className="text-xs text-slate-400">Teléfono / WhatsApp</span>
               <span className="font-bold text-xs sm:text-sm">+56 9 59406597</span>
@@ -849,7 +849,7 @@ const checkoutWhatsApp = () => {
 
 <div className="pt-4">
             <a 
-              href="https://wa.me/56934341783?text=Hola,%20necesito%20hacer%20un%20pedido%20de%20aseo." 
+              href="https://wa.me/56959406597?text=Hola,%20necesito%20hacer%20un%20pedido%20de%20aseo." 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3.5 px-6 sm:px-8 rounded-2xl transition-all shadow-xl text-base sm:text-lg"
