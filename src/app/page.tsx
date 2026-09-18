@@ -148,7 +148,7 @@ export default function Home() {
 // Estado para alertas de error en el formulario de despacho
   const [formError, setFormError] = useState('')
 
-  const checkoutWhatsApp = () => {
+const checkoutWhatsApp = () => {
     if (cart.length === 0) return
 
     // Validar que los campos obligatorios no estén vacíos
@@ -175,8 +175,14 @@ export default function Home() {
     const encoded = encodeURIComponent(message)
     const url = `https://wa.me/56934341783?text=${encoded}`
     
-    // Apertura limpia optimizada para móviles
-    window.location.href = url
+    // Detección automática: Si es dispositivo móvil abre directo, si es PC abre pestaña nueva
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+
+    if (isMobile) {
+      window.location.href = url // En celu abre la app directo sin pestañas en blanco
+    } else {
+      window.open(url, '_blank') // En PC abre WhatsApp Web en una pestaña nueva y mantiene tu tienda abierta
+    }
   }
 
   // Lista completa de productos con correcciones aplicadas
