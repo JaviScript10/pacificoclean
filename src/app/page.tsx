@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { Analytics } from '@vercel/analytics/react'
 import {
   Phone,
   Mail,
@@ -914,6 +915,11 @@ const checkoutWhatsApp = () => {
           </span>
         </div>
       </footer>
+
+          {/* COMPONENTE DE VERCEL ANALYTICS */}
+      <Analytics />
     </div>
-  )
+    )
+        
+  
 }
