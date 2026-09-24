@@ -60,8 +60,8 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('Todos')
   
-  // Estado para el modal de imagen (Lightbox)
-  const [activeImageModal, setActiveImageModal] = useState<string | null>(null)
+  // Estado para el modal de imagen (Lightbox / Accesibilidad)
+  const [activeImageModal, setActiveImageModal] = useState<{ name: string; price: number; img: string; cat: string; desc?: string } | null>(null)
 
   // Estado para el carrito y formulario de despacho
   const [cart, setCart] = useState<{ name: string; price: number; qty: number; img: string }[]>([])
@@ -93,7 +93,7 @@ export default function Home() {
   }
 
   // Funciones del Carrito
-  const addToCart = (product: { name: string; price: number; img: string; variants?: { name: string; price: number }[] }, productId: string) => {
+  const addToCart = (product: { name: string; price: number; img: string; cat: string; variants?: { name: string; price: number }[] }, productId: string) => {
     let finalName = product.name
     let finalPrice = product.price
 
@@ -146,19 +146,18 @@ export default function Home() {
   const shippingCost = getShippingCost()
   const finalTotal = subtotalCartPrice + (cart.length > 0 ? shippingCost : 0)
 
-// Estado para alertas de error en el formulario de despacho
+  // Estado para alertas de error en el formulario de despacho
   const [formError, setFormError] = useState('')
 
-const checkoutWhatsApp = () => {
+  const checkoutWhatsApp = () => {
     if (cart.length === 0) return
 
-    // Validar que los campos obligatorios no estén vacíos
     if (!clientName.trim() || !clientPhone.trim() || !clientAddress.trim()) {
       setFormError('⚠️ Por favor, rellena todos los campos de entrega (Nombre, Teléfono y Dirección) antes de enviar el pedido.')
       return
     }
 
-    setFormError('') // Limpiar error si todo está OK
+    setFormError('')
 
     let message = `NUEVO PEDIDO / COTIZACION - PacificoClean\n\n`
     message += `Cliente: ${clientName}\n`
@@ -176,17 +175,16 @@ const checkoutWhatsApp = () => {
     const encoded = encodeURIComponent(message)
     const url = `https://wa.me/56959406597?text=${encoded}`
     
-    // Detección automática: Si es dispositivo móvil abre directo, si es PC abre pestaña nueva
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
     if (isMobile) {
-      window.location.href = url // En celu abre la app directo sin pestañas en blanco
+      window.location.href = url
     } else {
-      window.open(url, '_blank') // En PC abre WhatsApp Web en una pestaña nueva y mantiene tu tienda abierta
+      window.open(url, '_blank')
     }
   }
 
-  // Lista completa de productos con correcciones aplicadas
+  // Lista completa de productos
   const productos = [
     // --- OFERTAS & FIESTAS PATRIAS ---
     { id: 'off-1', name: 'Limpia Piso aroma primavera 2 litros', price: 1500, cat: 'Ofertas', badge: '¡Oferta!', img: '/images/oferta-limpia piso-2LT-1.500-.png' },
@@ -212,7 +210,7 @@ const checkoutWhatsApp = () => {
     { id: 'jab-3', name: 'Lavalozas Ultra Power Glim (5 Litros)', price: 4000, cat: 'Jabón y Lavalozas', img: '/images/lavalozas-glim-ultrapower-5litros.png' },
     { id: 'jab-4', name: 'Lavalozas Don Tito (5 Litros)', price: 4000, cat: 'Jabón y Lavalozas', img: '/images/lavalozas-tito-5litros.png' },
 
-    // --- LIMPIEZA DE SUPERFICIES Y PISOS (Cera Incolora corregida) ---
+    // --- LIMPIEZA DE SUPERFICIES Y PISOS ---
     { id: 'lim-1', name: 'Desengrasante Glim', price: 1990, cat: 'Limpieza', img: '/images/desengrasante-glim-1litro.png', variants: [
       { name: '1 Litro', price: 1990 },
       { name: '5 Litros', price: 5000 }
@@ -431,7 +429,7 @@ const checkoutWhatsApp = () => {
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 mt-2">Nuestros Productos y Ofertas</h2>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 max-w-md">
-            Selecciona tu variante preferida, revisa la foto ampliada y agrégalo a tu carro.
+            Haz clic en la imagen de cualquier producto para ver su detalle ampliado con mayor claridad.
           </p>
         </div>
 
@@ -454,7 +452,7 @@ const checkoutWhatsApp = () => {
           </div>
         </div>
 
-        {/* Grilla de productos con selector de variantes */}
+        {/* Grilla de productos */}
         <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 scrollbar-none snap-x snap-mandatory">
           {filteredProducts.map((prod) => {
             const currentVariantIdx = selectedVariants[prod.id] || 0
@@ -471,10 +469,10 @@ const checkoutWhatsApp = () => {
                   </span>
                 )}
 
-                {/* Contenedor de la Imagen */}
+                {/* Contenedor de la Imagen (Abre Modal Accesible) */}
                 <div 
-                  onClick={() => setActiveImageModal(prod.img)}
-                  title="Haz clic para ampliar la imagen"
+                  onClick={() => setActiveImageModal({ name: prod.name, price: displayPrice, img: prod.img, cat: prod.cat })}
+                  title="Haz clic para ver imagen y detalles ampliados"
                   className="relative h-52 sm:h-56 w-full bg-slate-50 flex items-center justify-center p-4 overflow-hidden border-b border-slate-100 cursor-zoom-in"
                 >
                   <span className="absolute top-2 left-2 bg-[#0A4D94] text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider z-20 shadow-md flex items-center gap-1">
@@ -487,11 +485,11 @@ const checkoutWhatsApp = () => {
                       alt={prod.name} 
                       fill 
                       sizes="(max-width: 768px) 270px, 25vw"
-                      className="object-contain group-hover:scale-125 transition-transform duration-500 ease-out" 
+                      className="object-contain group-hover:scale-110 transition-transform duration-500 ease-out" 
                     />
                   </div>
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 z-10">
-                    <span className="bg-white/90 text-slate-900 text-xs font-bold py-1 px-3 rounded-full shadow-md">Ampliar imagen</span>
+                    <span className="bg-white/95 text-slate-900 text-xs font-bold py-1.5 px-3.5 rounded-full shadow-md">Ver grande</span>
                   </div>
                 </div>
 
@@ -501,7 +499,7 @@ const checkoutWhatsApp = () => {
                       {prod.name}
                     </h3>
 
-                    {/* Selector desplegable de variantes si las tiene */}
+                    {/* Selector desplegable de variantes */}
                     {prod.variants && prod.variants.length > 0 && (
                       <div className="mt-3">
                         <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
@@ -552,34 +550,63 @@ const checkoutWhatsApp = () => {
         </div>
       </section>
 
-      {/* MODAL VISOR DE IMAGEN */}
+      {/* MODAL VISOR DE IMAGEN AMPLIADA (ACCESIBILIDAD PARA LENTES) */}
       {activeImageModal && (
         <div 
           onClick={() => setActiveImageModal(null)}
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn"
         >
           <div 
             onClick={(e) => e.stopPropagation()} 
-            className="relative bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] p-4 flex flex-col items-center shadow-2xl overflow-hidden"
+            className="relative bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl overflow-hidden flex flex-col space-y-4"
           >
             <button
               onClick={() => setActiveImageModal(null)}
-              className="absolute top-4 right-4 bg-slate-900 hover:bg-black text-white p-2.5 rounded-full shadow-lg transition-all z-20 cursor-pointer"
-              aria-label="Cerrar imagen"
+              className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-700 w-9 h-9 rounded-full flex items-center justify-center font-bold transition-all z-20 cursor-pointer shadow-sm"
+              aria-label="Cerrar modal"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
-            <div className="relative w-full h-[70vh] flex items-center justify-center bg-slate-50 rounded-2xl p-2 mt-2">
+
+            <div>
+              <span className="text-[11px] font-bold text-[#0A4D94] uppercase tracking-wider bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">
+                {activeImageModal.cat}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-2">
+                {activeImageModal.name}
+              </h3>
+            </div>
+
+            <div className="relative w-full h-64 sm:h-72 bg-slate-50 rounded-2xl flex items-center justify-center p-2 border border-slate-100">
               <Image 
-                src={activeImageModal} 
-                alt="Vista ampliada del producto" 
+                src={activeImageModal.img} 
+                alt={activeImageModal.name} 
                 fill 
                 className="object-contain"
               />
             </div>
-            <p className="text-xs text-slate-500 mt-3 font-medium text-center">
-              Haz clic fuera de la imagen o en el botón superior para cerrar.
-            </p>
+
+            <div className="flex items-center justify-between pt-2">
+              <div>
+                <span className="text-xs text-slate-400 block font-medium">Precio por unidad:</span>
+                <span className="text-2xl font-black text-[#0A4D94]">
+                  ${activeImageModal.price.toLocaleString('es-CL')}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  const match = productos.find(p => p.name === activeImageModal.name)
+                  if (match) {
+                    addToCart(match, match.id)
+                  }
+                  setActiveImageModal(null)
+                }}
+                className="bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3 px-6 rounded-xl text-sm transition-all shadow-md cursor-pointer flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4 text-emerald-400" />
+                Agregar al Carro
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -650,7 +677,6 @@ const checkoutWhatsApp = () => {
                       <User className="w-3.5 h-3.5 text-[#0A4D94]" /> Datos para tu Entrega / Despacho
                     </h4>
 
-                    {/* AVISO DE ERROR SI FALTAN CAMPOS */}
                     {formError && (
                       <div className="bg-red-50 border border-red-200 text-red-600 text-xs font-bold p-3 rounded-xl animate-pulse">
                         {formError}
@@ -729,19 +755,17 @@ const checkoutWhatsApp = () => {
               )}
 
               {cart.length > 0 && (
-                  <button
-                onClick={checkoutWhatsApp}
-                className="w-full bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3.5 px-6 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2 text-sm cursor-pointer"
-              >
-                {/* Icono oficial de WhatsApp */}
-                <svg className="w-5 h-5 fill-current text-emerald-400" viewBox="0 0 24 24">
-                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                </svg>
-                <span>Enviar Pedido por WhatsApp</span>
-              </button>
+                <button
+                  onClick={checkoutWhatsApp}
+                  className="w-full bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3.5 px-6 rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2 text-sm cursor-pointer"
+                >
+                  <svg className="w-5 h-5 fill-current text-emerald-400" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                  <span>Enviar Pedido por WhatsApp</span>
+                </button>
               )}
 
-              {/* Botón Seguir Comprando */}
               <button
                 onClick={() => setIsCartOpen(false)}
                 className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs cursor-pointer border border-slate-300"
@@ -848,14 +872,13 @@ const checkoutWhatsApp = () => {
             </a>
           </div>
 
-<div className="pt-4">
+          <div className="pt-4">
             <a 
               href="https://wa.me/56959406597?text=Hola,%20necesito%20hacer%20un%20pedido%20de%20aseo." 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3.5 px-6 sm:px-8 rounded-2xl transition-all shadow-xl text-base sm:text-lg"
             >
-              {/* Icono oficial de WhatsApp */}
               <svg className="w-5 h-5 sm:w-6 sm:h-6 fill-current text-emerald-400" viewBox="0 0 24 24">
                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
               </svg>
@@ -865,9 +888,10 @@ const checkoutWhatsApp = () => {
         </div>
       </section>
 
-      {/* Footer Legal con Créditos CiberByte en azul */}
+      {/* FOOTER OFICIAL CON REDES SOCIALES (TELÉFONO/WSP, INSTAGRAM, TIKTOK) */}
       <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-800 text-xs sm:text-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-transparent">
@@ -897,15 +921,37 @@ const checkoutWhatsApp = () => {
             </ul>
           </div>
 
+{/* REDES SOCIALES Y CONTACTO EN FOOTER */}
           <div>
-            <h4 className="font-bold text-white text-sm mb-3 uppercase tracking-wider">Contacto Oficial</h4>
-            <ul className="space-y-2 text-xs text-slate-400">
-              <li>Valparaíso, Chile</li>
-              <li>Tel / WhatsApp: +56 9 59406597</li>
-              <li>Email: pacificocleanvalparaiso@gmail.com</li>
-              <li>IG: @pacificoclean</li>
+            <h4 className="font-bold text-white text-sm mb-3 uppercase tracking-wider">Redes y Contacto</h4>
+            <ul className="space-y-2.5 text-xs text-slate-300">
+              <li>
+                <a href="https://wa.me/56959406597" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-emerald-400 transition-colors">
+                  {/* Icono oficial de WhatsApp */}
+                  <svg className="w-4 h-4 fill-current text-emerald-500 flex-shrink-0" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                  <span>+56 9 59406597 (WhatsApp / Fono)</span>
+                </a>
+              </li>
+              <li>
+                <a href="https://instagram.com/pacificoclean" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-pink-400 transition-colors">
+                  <Instagram className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                  <span>Instagram: @pacificoclean</span>
+                </a>
+              </li>
+              <li>
+                <a href="https://www.tiktok.com/@pacifico.clean" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-cyan-400 transition-colors">
+                  <svg className="w-4 h-4 fill-current text-cyan-400 flex-shrink-0" viewBox="0 0 24 24">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.68 6.26 6.26 0 0 0 9.3 22a6.3 6.3 0 0 0 6.3-6.28V9.16a8.16 8.16 0 0 0 4.3 1.25V6.9a4.85 4.85 0 0 1-.31-.21z"/>
+                  </svg>
+                  <span>TikTok: @pacifico.clean</span>
+                </a>
+              </li>
+              <li className="text-slate-500 pt-1">Valparaíso, Chile</li>
             </ul>
           </div>
+
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-2">
@@ -916,10 +962,8 @@ const checkoutWhatsApp = () => {
         </div>
       </footer>
 
-          {/* COMPONENTE DE VERCEL ANALYTICS */}
+      {/* COMPONENTE DE VERCEL ANALYTICS */}
       <Analytics />
     </div>
-    )
-        
-  
+  )
 }
