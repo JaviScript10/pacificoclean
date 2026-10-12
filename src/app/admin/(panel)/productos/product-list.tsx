@@ -118,7 +118,7 @@ export function ProductList({ products: initial }: { products: AdminProduct[] })
         {filtered.map((p) => (
           <li
             key={p.id}
-            className={`bg-white rounded-2xl border border-slate-200 p-3 flex items-center gap-3 ${
+            className={`bg-white rounded-2xl border border-slate-200 p-3 flex flex-wrap sm:flex-nowrap items-center gap-3 ${
               p.isActive ? '' : 'opacity-60'
             }`}
           >
@@ -142,9 +142,10 @@ export function ProductList({ products: initial }: { products: AdminProduct[] })
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 sm:gap-5 shrink-0">
+            {/* En celular: fila propia debajo. En PC: a la derecha */}
+            <div className="w-full sm:w-auto flex items-center justify-between sm:justify-end gap-4 sm:gap-5 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 shrink-0">
               <label className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <span className="hidden sm:inline">Visible</span>
+                Visible
                 <Toggle
                   checked={p.isActive}
                   onChange={(v) => toggle(p.id, 'isActive', v)}
@@ -153,7 +154,7 @@ export function ProductList({ products: initial }: { products: AdminProduct[] })
                 />
               </label>
               <label className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-                <span className="hidden sm:inline">Oferta</span>
+                Oferta
                 <Toggle
                   checked={p.isOffer}
                   onChange={(v) => toggle(p.id, 'isOffer', v)}
@@ -163,7 +164,7 @@ export function ProductList({ products: initial }: { products: AdminProduct[] })
               </label>
               <Link
                 href={`/admin/productos/${p.id}`}
-                className="text-xs font-bold text-[#0A4D94] hover:underline"
+                className="text-xs font-bold text-white bg-[#0A4D94] hover:bg-[#083b73] px-4 py-2 rounded-lg"
               >
                 Editar
               </Link>
