@@ -3,7 +3,8 @@
 import { useMemo, useState, useTransition } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search } from 'lucide-react'
+import { Search, Plus } from 'lucide-react'
+import { Toggle } from '@/components/admin/toggle'
 import { setProductActive, setProductOffer } from './actions'
 
 export type AdminProduct = {
@@ -25,38 +26,6 @@ function normalize(s: string) {
 
 function withFlag(p: AdminProduct, field: Flag, value: boolean): AdminProduct {
   return field === 'isActive' ? { ...p, isActive: value } : { ...p, isOffer: value }
-}
-
-function Toggle({
-  checked,
-  onChange,
-  label,
-  disabled,
-}: {
-  checked: boolean
-  onChange: (value: boolean) => void
-  label: string
-  disabled?: boolean
-}) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      disabled={disabled}
-      onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors cursor-pointer disabled:opacity-50 ${
-        checked ? 'bg-emerald-500' : 'bg-slate-300'
-      }`}
-    >
-      <span
-        className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${
-          checked ? 'translate-x-5' : 'translate-x-0.5'
-        }`}
-      />
-    </button>
-  )
 }
 
 export function ProductList({ products: initial }: { products: AdminProduct[] }) {
@@ -105,6 +74,12 @@ export function ProductList({ products: initial }: { products: AdminProduct[] })
             {filtered.length} de {products.length}
           </p>
         </div>
+        <Link
+          href="/admin/productos/nuevo"
+          className="flex items-center gap-1.5 bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold text-sm py-2.5 px-4 rounded-xl"
+        >
+          <Plus className="w-4 h-4" /> Nuevo producto
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">

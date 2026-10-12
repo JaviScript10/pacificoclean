@@ -5,20 +5,24 @@ export const loginSchema = z.object({
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
 })
 
-export const categorySchema = z.object({
-  name: z.string().min(2, 'El nombre es obligatorio'),
-  slug: z.string().min(2, 'El slug es obligatorio'),
-  image_url: z.string().optional().nullable(),
+export const productFormSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().trim().min(2, 'El nombre debe tener al menos 2 caracteres').max(120, 'El nombre es demasiado largo'),
+  categoryId: z.string().uuid('Selecciona una categoría'),
+  description: z.string().trim().max(1000, 'La descripción es demasiado larga'),
+  badge: z.string().trim().max(20, 'La etiqueta debe tener máximo 20 caracteres'),
+  originalPrice: z.number().int('El precio anterior debe ser un número entero').positive('El precio anterior debe ser mayor a 0').nullable(),
+  isOffer: z.boolean(),
+  isActive: z.boolean(),
+  imagePath: z.string().nullable(),
+  variants: z
+    .array(
+      z.object({
+        name: z.string().trim().max(80, 'El nombre de la opción es demasiado largo'),
+        price: z.number().int('Los precios deben ser números enteros').positive('Cada precio debe ser mayor a 0'),
+      })
+    )
+    .min(1, 'Agrega al menos un precio'),
 })
 
-export const productSchema = z.object({
-  name: z.string().min(2, 'El nombre del producto es obligatorio'),
-  slug: z.string().min(2, 'El slug es obligatorio'),
-  description: z.string().optional().nullable(),
-  price: z.coerce.number().positive('El precio debe ser mayor a 0'),
-  stock: z.coerce.number().int().min(0, 'El stock no puede ser negativo'),
-  category_id: z.string().uuid('Selecciona una categoría válida'),
-  is_active: z.boolean().default(true),
-  is_featured: z.boolean().default(false),
-  is_offer: z.boolean().default(false),
-})
+export type ProductInput = z.infer<typeof productFormSchema>
