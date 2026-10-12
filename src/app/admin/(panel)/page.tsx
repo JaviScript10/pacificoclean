@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { requireAdmin } from '@/lib/auth'
 
 export default async function AdminHome() {
@@ -26,7 +27,12 @@ export default async function AdminHome() {
           </div>
         ))}
       </div>
-      <p className="text-sm text-slate-500">La gestión de productos llega en el siguiente paso.</p>
+      <Link
+        href="/admin/productos"
+        className="inline-block bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3 px-6 rounded-xl transition-all"
+      >
+        Gestionar productos →
+      </Link>
     </div>
   )
 }
