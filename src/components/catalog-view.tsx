@@ -448,7 +448,10 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value)
+              if (selectedCategory !== 'Todos') setSelectedCategory('Todos')
+            }}
             placeholder="Buscar producto: cloro, papel, bolsas…"
             aria-label="Buscar producto"
             className="w-full bg-white border border-slate-300 rounded-2xl pl-12 pr-4 py-3.5 text-sm sm:text-base text-slate-900 shadow-xs focus:outline-none focus:border-[#0A4D94]"
@@ -461,7 +464,7 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setSelectedCategory(cat)}
+                onClick={() => { setSelectedCategory(cat); setQuery('') }}
                 className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all shadow-xs cursor-pointer flex-shrink-0 ${
                   selectedCategory === cat
                     ? 'bg-[#0A4D94] text-white shadow-md'
