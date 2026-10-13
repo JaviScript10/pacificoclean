@@ -305,7 +305,7 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
         </div>
 
         {/* Grilla de productos */}
-        <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 scrollbar-none snap-x snap-mandatory">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-8">
           {filteredProducts.map((prod) => {
             const currentVariantIdx = selectedVariants[prod.id] || 0
             const displayPrice = (prod.variants[currentVariantIdx] ?? prod.variants[0]).price
@@ -315,10 +315,10 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
             return (
               <div 
                 key={prod.id} 
-                className="min-w-[270px] sm:min-w-0 bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group relative snap-start flex-shrink-0"
+                className="bg-white rounded-2xl border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden group relative"
               >
                 {prod.badge && (
-                  <span className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-20 shadow-sm">
+                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500 text-white text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-1 rounded-full uppercase tracking-wider z-20 shadow-sm">
                     {prod.badge}
                   </span>
                 )}
@@ -327,9 +327,9 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                 <div 
                   onClick={() => setActiveImageModal({ product: prod, price: displayPrice, img, cat: catLabel })}
                   title="Haz clic para ver imagen y detalles ampliados"
-                  className="relative h-52 sm:h-56 w-full bg-slate-50 flex items-center justify-center p-4 overflow-hidden border-b border-slate-100 cursor-zoom-in"
+                  className="relative h-36 sm:h-56 w-full bg-slate-50 flex items-center justify-center p-2 sm:p-4 overflow-hidden border-b border-slate-100 cursor-zoom-in"
                 >
-                  <span className="absolute top-2 left-2 bg-[#0A4D94] text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider z-20 shadow-md flex items-center gap-1">
+                  <span className="absolute top-2 left-2 bg-[#0A4D94] text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider z-20 shadow-md hidden sm:flex items-center gap-1">
                     {catLabel} <ExternalLink className="w-2.5 h-2.5" />
                   </span>
 
@@ -338,7 +338,7 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                       src={img} 
                       alt={prod.name} 
                       fill 
-                      sizes="(max-width: 768px) 270px, 25vw"
+                      sizes="(max-width: 1024px) 50vw, 25vw"
                       className="object-contain group-hover:scale-110 transition-transform duration-500 ease-out" 
                     />
                   </div>
@@ -347,7 +347,7 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                   </div>
                 </div>
 
-                <div className="p-4 sm:p-5 flex flex-col flex-grow justify-between">
+                <div className="p-3 sm:p-5 flex flex-col flex-grow justify-between">
                   <div>
                     <h3 className="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 group-hover:text-[#0A4D94] transition-colors">
                       {prod.name}
@@ -377,7 +377,7 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                     )}
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                  <div className="mt-3 sm:mt-4 pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
                     <div>
                       <span className="text-[10px] text-slate-400 block">Precio Ref:</span>
                       <div className="flex items-center gap-1">
@@ -391,7 +391,7 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                     </div>
                     <button
                       onClick={() => addToCart(prod)}
-                      className="bg-[#0A4D94] hover:bg-[#083b73] text-white font-medium text-xs py-2 px-3 sm:px-3.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 flex-shrink-0 cursor-pointer"
+                      className="bg-[#0A4D94] hover:bg-[#083b73] text-white font-medium text-xs py-2 px-3 sm:px-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 flex-shrink-0 cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5 text-emerald-400" />
                       <span>Agregar</span>
