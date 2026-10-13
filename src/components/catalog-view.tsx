@@ -439,6 +439,11 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                 className="object-contain"
               />
             </div>
+                        {activeImageModal.product.description && (
+              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                {activeImageModal.product.description}
+              </p>
+            )}
 
             <div className="flex items-center justify-between pt-2">
               <div>
