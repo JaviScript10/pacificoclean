@@ -870,6 +870,13 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                 </button>
               )}
 
+              {cart.length > 0 && (
+                <p className="text-[11px] text-slate-500 text-center">
+                  Al enviar tu pedido aceptas nuestra{' '}
+                  <a href="/privacidad" target="_blank" className="underline font-semibold text-slate-600">Política de privacidad</a>.
+                </p>
+              )}
+
               <button
                 onClick={() => setIsCartOpen(false)}
                 className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-2xl transition-all flex items-center justify-center gap-2 text-xs cursor-pointer border border-slate-300"
@@ -1038,6 +1045,8 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
           <div>
             <h4 className="font-bold text-white text-sm mb-3 uppercase tracking-wider">Términos y Legal</h4>
             <ul className="space-y-2 text-xs">
+              <li><a href="/aviso-legal" className="hover:text-white transition-colors underline underline-offset-2">Aviso legal</a></li>
+              <li><a href="/privacidad" className="hover:text-white transition-colors underline underline-offset-2">Política de privacidad</a></li>
               <li className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-emerald-500" /> <span>Stock y precios sujetos a confirmación</span></li>
               <li className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> <span>Garantía de calidad institucional</span></li>
               <li className="flex items-center gap-1.5"><ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> <span>Transacciones seguras vía WhatsApp</span></li>
@@ -1076,7 +1085,9 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-2">
-          <span>© {year} PacíficoClean Aseo Profesional. Todos los derechos reservados.</span>
+          <span className="text-center sm:text-left">
+            © {year} PacíficoClean · COMERCIALIZADORA B&amp;S SpA · RUT 78.388.995-1 · Todos los derechos reservados.
+          </span>
           <span>
             Desarrollado por <a href="https://ciberbyte.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline font-bold">CiberByte</a>
           </span>
