@@ -124,10 +124,11 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [selectedVariants, setSelectedVariants] = useState<{ [key: string]: number }>({})
 
-  // Aviso "Agregado" y animación del contador
-  const [toast, setToast] = useState<string | null>(null)
+  // Botón "Agregado" por producto y animación de la barra del carrito
+  const [addedIds, setAddedIds] = useState<string[]>([])
   const [bump, setBump] = useState(false)
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [modalAdded, setModalAdded] = useState(false)
+  const addedTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map())
   const bumpTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Datos del cliente para el despacho
@@ -205,8 +206,9 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
   }, [activeImageModal, isCartOpen, mobileMenuOpen])
 
   useEffect(() => {
+    const timers = addedTimers.current
     return () => {
-      if (toastTimer.current) clearTimeout(toastTimer.current)
+      timers.forEach(clearTimeout)
       if (bumpTimer.current) clearTimeout(bumpTimer.current)
     }
   }, [])
@@ -247,10 +249,17 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
       return [...prevCart, { name: finalName, price: chosenVariant.price, qty: 1, img }]
     })
 
-    // En vez de abrir el carrito: aviso breve + animación del contador
-    setToast(finalName)
-    if (toastTimer.current) clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(null), 2200)
+    // El mismo botón cambia a "Agregado" por un momento
+    setAddedIds(prev => (prev.includes(product.id) ? prev : [...prev, product.id]))
+    const previousTimer = addedTimers.current.get(product.id)
+    if (previousTimer) clearTimeout(previousTimer)
+    addedTimers.current.set(
+      product.id,
+      setTimeout(() => {
+        setAddedIds(prev => prev.filter(id => id !== product.id))
+        addedTimers.current.delete(product.id)
+      }, 1500)
+    )
 
     setBump(true)
     if (bumpTimer.current) clearTimeout(bumpTimer.current)
@@ -587,10 +596,20 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
                     </div>
                     <button
                       onClick={() => addToCart(prod)}
-                      className="bg-[#0A4D94] hover:bg-[#083b73] active:scale-95 text-white font-medium text-xs py-2 px-3 sm:px-3.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 flex-shrink-0 cursor-pointer"
+                      aria-live="polite"
+                      className={`${addedIds.includes(prod.id) ? 'bg-emerald-500 hover:bg-emerald-500 scale-105' : 'bg-[#0A4D94] hover:bg-[#083b73] scale-100'} active:scale-95 text-white font-medium text-xs py-2 px-3 sm:px-3.5 sm:min-w-[104px] rounded-xl transition-all duration-200 shadow-sm flex items-center justify-center gap-1.5 flex-shrink-0 cursor-pointer`}
                     >
-                      <Plus className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Agregar</span>
+                      {addedIds.includes(prod.id) ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Agregado</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Agregar</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -655,13 +674,19 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
               </div>
               <button
                 onClick={() => {
+                  if (modalAdded) return
                   addToCart(activeImageModal.product)
-                  setActiveImageModal(null)
+                  setModalAdded(true)
+                  setTimeout(() => {
+                    setModalAdded(false)
+                    setActiveImageModal(null)
+                  }, 700)
                 }}
-                className="bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3 px-6 rounded-xl text-sm transition-all shadow-md cursor-pointer flex items-center gap-2"
+                aria-live="polite"
+                className={`${modalAdded ? 'bg-emerald-500 hover:bg-emerald-500' : 'bg-[#0A4D94] hover:bg-[#083b73]'} text-white font-bold py-3 px-6 rounded-xl text-sm transition-all shadow-md cursor-pointer flex items-center gap-2`}
               >
-                <Plus className="w-4 h-4 text-emerald-400" />
-                Agregar al Carro
+                {modalAdded ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4 text-emerald-400" />}
+                {modalAdded ? 'Agregado' : 'Agregar al Carro'}
               </button>
             </div>
           </div>
@@ -857,26 +882,12 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
         </div>
       )}
 
-      {/* AVISO "AGREGADO" */}
-      {toast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className={`fixed left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white text-xs sm:text-sm font-semibold py-2.5 px-4 rounded-full shadow-xl flex items-center gap-2 max-w-[90vw] ${
-            totalCartItems > 0 ? 'bottom-24 sm:bottom-6' : 'bottom-6'
-          }`}
-        >
-          <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span className="truncate">Agregado: {toast}</span>
-        </div>
-      )}
-
       {/* BARRA FIJA DE CARRITO (solo celular) */}
       {totalCartItems > 0 && !isCartOpen && !activeImageModal && (
         <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-white via-white/95 to-white/0">
           <button
             onClick={() => setIsCartOpen(true)}
-            className="w-full bg-[#0A4D94] active:bg-[#083b73] text-white rounded-2xl shadow-xl py-3 px-4 flex items-center justify-between gap-3 cursor-pointer"
+            className={`w-full bg-[#0A4D94] active:bg-[#083b73] text-white rounded-2xl shadow-xl py-3 px-4 flex items-center justify-between gap-3 cursor-pointer transition-transform duration-200 ${bump ? 'scale-[1.03]' : 'scale-100'}`}
           >
             <span className="flex items-center gap-2 text-sm font-semibold">
               <ShoppingCart className="w-5 h-5 text-emerald-400" />
