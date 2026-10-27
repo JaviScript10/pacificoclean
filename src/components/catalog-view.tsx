@@ -426,10 +426,10 @@ export function CatalogView({ products: allProducts, categories: dbCategories, s
 
           <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left order-2 lg:order-1">
             <h1 className="text-2xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-[#0A4D94]">
-              Soluciones de aseo para hogares, empresas e instituciones
+              Artículos de aseo y limpieza en Valparaíso
             </h1>
             <p className="text-sm sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              Catálogo especializado con referencias individuales por producto de limpieza y aseo profesional. Stock y precios sujetos a confirmación comercial.
+              Productos de aseo para hogares, empresas e instituciones, con despacho en {joinEs(shippingOptions.map(([city]) => city))}, incluidos Playa Ancha y los cerros de Valparaíso. Stock y precios sujetos a confirmación.
             </p>
             <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 pt-2">
               <a href="#catalogo" onClick={(e) => handleNavClick(e, 'catalogo')} className="bg-[#0A4D94] hover:bg-[#083b73] text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md text-center">Ver Catálogo</a>
